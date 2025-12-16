@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { AISuggestionBox } from './AISuggestionBox';
+import { WhatsAppButton } from './WhatsAppButton';
 
 export function GiftListModal({ member, onClose, onAddGift, onRemoveGift, onToggleGift }) {
     const [giftText, setGiftText] = useState('');
@@ -52,6 +53,8 @@ export function GiftListModal({ member, onClose, onAddGift, onRemoveGift, onTogg
                 </button>
 
                 <h2 style={{ textAlign: 'center', color: 'var(--primary)' }}>Regalos para {member.name}</h2>
+
+                <WhatsAppButton memberName={member.name} gifts={member.gifts} />
 
                 <form onSubmit={handleAdd} style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
                     <input
