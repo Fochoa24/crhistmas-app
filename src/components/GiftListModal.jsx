@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { AISuggestionBox } from './AISuggestionBox';
 
 export function GiftListModal({ member, onClose, onAddGift, onRemoveGift, onToggleGift }) {
     const [giftText, setGiftText] = useState('');
@@ -97,6 +98,11 @@ export function GiftListModal({ member, onClose, onAddGift, onRemoveGift, onTogg
                         </li>
                     ))}
                 </ul>
+
+                <AISuggestionBox
+                    memberName={member.name}
+                    onAddGift={(text) => onAddGift(member.id, text)}
+                />
             </div>
         </div>
     );
