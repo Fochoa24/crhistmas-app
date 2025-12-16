@@ -16,16 +16,20 @@ export const getGiftSuggestions = async (memberName, interests) => {
 
   const prompt = `
     Actúa como un asistente experto en regalos de Navidad en Chile.
-    Sugiere 3 regalos creativos y adecuados para ${memberName}, basándote en que le gusta: "${interests}".
-    Busca opciones que se puedan encontrar en tiendas chilenas como MercadoLibre, Paris, Falabella, Ripley, etc.
-    
-    Devuelve la respuesta SOLAMENTE en formato JSON válido con esta estructura exacta (sin markdown, sin bloques de código):
+    Analiza el siguiente input del usuario: "${interests}".
+
+    Instrucciones clave:
+    1. Si el input es un PRODUCTO ESPECÍFICO (ej: "zapatillas blancas", "iphone", "cafetera"), DEBES sugerir modelos, marcas o tipos específicos de ESE producto. NO sugieras accesorios ni productos relacionados (como cordones o limpiadores) a menos que se pida explícitamente.
+    2. Si el input es un INTERÉS o HOBBY (ej: "fútbol", "cocinar"), sugiere regalos relacionados creativos.
+    3. Busca opciones disponibles en tiendas chilenas (MercadoLibre, Paris, Falabella, Ripley, etc.).
+
+    Devuelve la respuesta SOLAMENTE en formato JSON válido con esta estructura exacta para sugerir 3 opciones para ${memberName}:
     [
       {
-        "name": "Nombre del regalo",
+        "name": "Nombre específico del producto/regalo",
         "price": "Precio estimado en CLP (ej: $15.990)",
         "store": "Nombre de la tienda sugerida (ej: Falabella)",
-        "reason": "Breve explicación"
+        "reason": "Por qué es una buena opción"
       }
     ]
   `;
