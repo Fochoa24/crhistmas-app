@@ -2,23 +2,18 @@ import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
 
 export function Login() {
-    const { loginWithGoogle, loginWithGoogleRedirect } = useAuth();
+    const { loginWithGoogle } = useAuth();
     const [error, setError] = useState(null);
 
     // Detect In-App Browser (safe for SSR check)
     const isBrowser = typeof navigator !== 'undefined';
     const ua = isBrowser ? (navigator.userAgent || navigator.vendor || window.opera) : '';
     const isInApp = isBrowser && /FBAN|FBAV|Instagram|WhatsApp/i.test(ua);
-    const isMobile = isBrowser && /iPhone|iPad|iPod|Android/i.test(ua);
 
     const handleLogin = async () => {
         try {
             setError(null);
-            if (isMobile) {
-                await loginWithGoogleRedirect();
-            } else {
-                await loginWithGoogle();
-            }
+            await loginWithGoogle();
         } catch (err) {
             console.error(err);
             let msg = "No se pudo iniciar sesión. Verifica tu conexión.";

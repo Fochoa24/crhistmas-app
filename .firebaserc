@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "gift-webapp-fd049"
-  }
+    "default": "gift-webapp-fd049",
+    "navidad-giftlist": "navidad-giflist"
+  },
+  "targets": {},
+  "etags": {}
 }

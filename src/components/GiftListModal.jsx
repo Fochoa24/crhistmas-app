@@ -63,7 +63,7 @@ export function GiftListModal({ member, onClose, onAddGift, onRemoveGift, onTogg
                         placeholder="Nuevo regalo..."
                         value={giftText}
                         onChange={(e) => setGiftText(e.target.value)}
-                        style={{ flex: 1 }}
+                        className="gift-input"
                     />
                     <button type="submit" className="btn-primary">+</button>
                 </form>
