@@ -15,21 +15,27 @@ export const getGiftSuggestions = async (memberName, interests) => {
   const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
   const prompt = `
-    Actúa como un asistente experto en regalos de Navidad en Chile.
-    Analiza el siguiente input del usuario: "${interests}".
+    Actúa como un asistente de compras experto (Personal Shopper) en Chile.
+    Tu objetivo es encontrar los mejores productos para comprar.
+    
+    INPUT DEL USUARIO: "${interests}"
 
-    Instrucciones clave:
-    1. Si el input es un PRODUCTO ESPECÍFICO (ej: "zapatillas blancas", "iphone", "cafetera"), DEBES sugerir modelos, marcas o tipos específicos de ESE producto. NO sugieras accesorios ni productos relacionados (como cordones o limpiadores) a menos que se pida explícitamente.
-    2. Si el input es un INTERÉS o HOBBY (ej: "fútbol", "cocinar"), sugiere regalos relacionados creativos.
-    3. Busca opciones disponibles en tiendas chilenas (MercadoLibre, Paris, Falabella, Ripley, etc.).
+    REGLAS ESTRICTAS DE INTERPRETACIÓN:
+    1. CATEGORÍA "PRODUCTO ESPECÍFICO": Si el usuario escribe un objeto tangible (ej: "zapatillas blancas", "iphone 15", "cafetera", "perfume"), TU ÚNICA TAREA es buscar modelos y marcas de ESE MISMO OBJETO.
+       - 🚫 PROHIBIDO: No sugieras accesorios, complementos o "kits de cuidado" (ej: nada de limpiadores, fundas, o repuestos) a menos que el usuario lo escriba explícitamente (ej: "funda para iphone").
+       - ✅ PERMITIDO: Sugerir marcas específicas disponibles en Chile (ej: Nike Air Force 1, Adidas Stan Smith, Converse Chuck Taylor).
+    
+    2. CATEGORÍA "INTERÉS/HOBBY": Solo si el input es abstracto (ej: "fútbol", "cocinar", "le gusta el arte"), entonces sí sugiere regalos relacionados creativos.
 
-    Devuelve la respuesta SOLAMENTE en formato JSON válido con esta estructura exacta para sugerir 3 opciones para ${memberName}:
+    3. CONTEXTO CHILE: Usa precios reales en CLP y tiendas chilenas (Falabella, Paris, Ripley, MercadoLibre, Zora).
+
+    Responde SOLAMENTE con este JSON exacto. DEBES generar EXACTAMENTE 5 (CINCO) OPCIONES:
     [
       {
-        "name": "Nombre específico del producto/regalo",
-        "price": "Precio estimado en CLP (ej: $15.990)",
-        "store": "Nombre de la tienda sugerida (ej: Falabella)",
-        "reason": "Por qué es una buena opción"
+        "name": "Nombre EXACTO del modelo/producto",
+        "price": "Precio aprox en CLP",
+        "store": "Tienda en Chile",
+        "reason": "Por qué este modelo es bueno"
       }
     ]
   `;
@@ -43,6 +49,12 @@ export const getGiftSuggestions = async (memberName, interests) => {
     return JSON.parse(jsonString);
   } catch (error) {
     console.error("Error fetching AI suggestions:", error);
+
+    // Check for quota exceeded error (429) or service overloaded (503)
+    if (error.message?.includes("429") || error.message?.includes("Quota exceeded")) {
+      throw new Error("⏳ Has usado muchas consultas seguidas. Espera unos segundos e intenta de nuevo (Límite gratuito de Google).");
+    }
+
     throw new Error("No se pudieron generar sugerencias. Intenta de nuevo.");
   }
 };
