@@ -12,6 +12,21 @@ export const getGiftSuggestions = async (memberName, interests) => {
     throw new Error("API Key no configurada. Agrega VITE_GEMINI_API_KEY al archivo .env");
   }
 
+  // 1. GENERAR CLAVE DE CACHÉ
+  const cacheKey = `gift_suggestions_${interests.toLowerCase().trim()}`;
+
+  // 2. REVISAR CACHÉ
+  const cachedData = localStorage.getItem(cacheKey);
+  if (cachedData) {
+    try {
+      console.log("⚡ Usando respuesta en caché para:", interests);
+      return JSON.parse(cachedData);
+    } catch (e) {
+      console.warn("Error parsing cache:", e);
+      localStorage.removeItem(cacheKey);
+    }
+  }
+
   const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
   const prompt = `
@@ -29,7 +44,7 @@ export const getGiftSuggestions = async (memberName, interests) => {
 
     3. CONTEXTO CHILE: Usa precios reales en CLP y tiendas chilenas (Falabella, Paris, Ripley, MercadoLibre, Zora).
 
-    Responde SOLAMENTE con este JSON exacto. DEBES generar EXACTAMENTE 5 (CINCO) OPCIONES:
+    Responde SOLAMENTE con este JSON exacto. DEBES generar EXACTAMENTE 8 (OCHO) OPCIONES variadas:
     [
       {
         "name": "Nombre EXACTO del modelo/producto",
@@ -46,7 +61,16 @@ export const getGiftSuggestions = async (memberName, interests) => {
     const text = response.text();
     // Clean potential markdown code blocks
     const jsonString = text.replace(/```json/g, '').replace(/```/g, '').trim();
-    return JSON.parse(jsonString);
+    const data = JSON.parse(jsonString);
+
+    // 3. GUARDAR EN CACHÉ
+    try {
+      localStorage.setItem(cacheKey, JSON.stringify(data));
+    } catch (e) {
+      console.warn("Storage full, cannot cache result:", e);
+    }
+
+    return data;
   } catch (error) {
     console.error("Error fetching AI suggestions:", error);
 

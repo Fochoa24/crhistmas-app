@@ -7,6 +7,8 @@ import { AuthProvider } from './context/AuthProvider';
 import { useAuth } from './context/AuthContext';
 import { Login } from './components/Login';
 
+import { Hero } from './components/Hero';
+
 function App() {
   return (
     <AuthProvider>
@@ -28,68 +30,36 @@ function MainApp() {
   const selectedMember = members.find(m => m.id === selectedMemberId);
 
   return (
-    <div className="container">
-      <header style={{
-        textAlign: 'center',
-        marginBottom: '3rem',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexWrap: 'wrap'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <h1 style={{ fontSize: '2.5rem', color: 'var(--primary)', margin: 0 }}>
-            🎄 Regalos de Navidad
-          </h1>
+    <div className="app-container">
+      <Hero currentUser={currentUser} onLogout={logout} />
+
+      <div className="container" style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 1rem' }}>
+        <MemberForm onAdd={addMember} />
+
+        <div className="members-grid" style={{ marginTop: '3rem' }}>
+          {members.map(member => (
+            <MemberCard
+              key={member.id}
+              member={member}
+              onRemove={removeMember}
+              onClick={() => setSelectedMemberId(member.id)}
+            />
+          ))}
         </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <span style={{ color: 'var(--primary)', fontWeight: 'bold' }}>
-            Hola, {currentUser.displayName?.split(' ')[0]}
-          </span>
-          <button
-            onClick={logout}
-            style={{
-              padding: '0.5rem 1rem',
-              fontSize: '0.8rem',
-              background: 'transparent',
-              border: '1px solid var(--primary)',
-              color: 'var(--primary)'
-            }}
-          >
-            Salir
-          </button>
-        </div>
-      </header>
-
-      <MemberForm onAdd={addMember} />
-
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-        gap: '1.5rem',
-        marginTop: '2rem'
-      }}>
-        {members.map(member => (
-          <MemberCard
-            key={member.id}
-            member={member}
-            onRemove={removeMember}
-            onClick={() => setSelectedMemberId(member.id)}
-          />
-        ))}
       </div>
 
-      {selectedMember && (
-        <GiftListModal
-          member={selectedMember}
-          onClose={() => setSelectedMemberId(null)}
-          onAddGift={addGift}
-          onRemoveGift={removeGift}
-          onToggleGift={toggleGift}
-        />
-      )}
-    </div>
+      {
+        selectedMember && (
+          <GiftListModal
+            member={selectedMember}
+            onClose={() => setSelectedMemberId(null)}
+            onAddGift={addGift}
+            onRemoveGift={removeGift}
+            onToggleGift={toggleGift}
+          />
+        )
+      }
+    </div >
   )
 }
 
